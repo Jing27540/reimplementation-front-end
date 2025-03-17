@@ -104,7 +104,6 @@ const CourseAssignments: React.FC<CourseAssignmentsProps> = ({ courseId, courseN
     return Array.from({ length: numAssignments }, (_, idx) => ({
       id: parseInt(`${courseId}${idx}`),
       name: `Assignment ${idx + 1} for ${courseName}`,
-      courseName: courseName,
       description: "This is a fake assignment",
       created_at: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
       updated_at: new Date().toISOString(),
@@ -162,24 +161,13 @@ const CourseAssignments: React.FC<CourseAssignmentsProps> = ({ courseId, courseN
   const assignments = generateFakeAssignments();
   const columns = getAssignmentColumns(actionHandlers);
 
-  // Remove the 'Course Name' column from column definitions to hide it.
-  const filteredColumns = columns.filter((col) => col.header !== "Course Name");
-  // Remove 'courseName' field from assignment data to hide it and Format date fields.
-  const filteredAssignments = assignments.map(
-    ({ name, courseName, created_at, updated_at, ...rest }) => ({
-      ...rest,
-      name: capitalizeSentence(name),
-      created_at: formatDate(created_at), // Format 'created_at' date
-      updated_at: formatDate(updated_at), // Format 'updated_at' date
-    })
-  );
 
   return (
     <div className="px-4 py-2 bg-light">
       <h5 className="mb-3">Assignments for {courseName}</h5>
       <Table
-        data={filteredAssignments}
-        columns={filteredColumns}
+        data={assignments}
+        columns={columns}
         showGlobalFilter={false}
         showColumnFilter={false}
         showPagination={false}
