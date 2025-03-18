@@ -99,17 +99,21 @@ const CourseAssignments: React.FC<CourseAssignmentsProps> = ({ courseId, courseN
     },
   ];
 
+  // TODO: this method is used to generate dummy assignment
+  // Ensure the formatDate() is called to format the Date value
   const generateFakeAssignments = () => {
     const numAssignments = 3 + Math.floor(Math.random() * 3);
     return Array.from({ length: numAssignments }, (_, idx) => ({
       id: parseInt(`${courseId}${idx}`),
-      name: `Assignment ${idx + 1} for ${courseName}`,
+      name: capitalizeSentence(`Assignment ${idx + 1}`),
       description: "This is a fake assignment",
-      created_at: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: formatDate(new Date(Date.now() - Math.random() * 10000000000).toISOString()),
+      updated_at: formatDate(new Date().toISOString()),
     }));
   };
 
+  // Helper method to capitalizeSentence
+  // TODO: this should be move to the common Table component reduce duplication.
   const capitalizeSentence = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
@@ -146,28 +150,32 @@ const CourseAssignments: React.FC<CourseAssignmentsProps> = ({ courseId, courseN
   // Helper function to format the dates
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric', 
-      hour: 'numeric', 
-      minute: 'numeric', 
-      hour12: true 
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
     };
-    return date.toLocaleString('en-US', options);
+    return date.toLocaleString("en-US", options);
   };
-  
 
   const assignments = generateFakeAssignments();
   const columns = getAssignmentColumns(actionHandlers);
 
+  // TODO: this should be handle by the Common Table
+  const updatedColumnsHeader = columns.map((h) => ({
+    ...h,
+    header: capitalizeSentence(h.header as string)
+  }));
 
   return (
     <div className="px-4 py-2 bg-light">
       <h5 className="mb-3">Assignments for {courseName}</h5>
       <Table
         data={assignments}
-        columns={columns}
+        columns={updatedColumnsHeader}
         showGlobalFilter={false}
         showColumnFilter={false}
         showPagination={false}
